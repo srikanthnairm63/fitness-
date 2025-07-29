@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fitness App</title>
+</head>
+<body>
+  <h1>Fitness Users</h1>
+  <ul id="userList"></ul>
+
+  <h2>Add User</h2>
+  <input type="text" id="name" placeholder="Name">
+  <input type="text" id="workouts" placeholder="Workouts (comma-separated)">
+  <button onclick="addUser()">Add</button>
+
+  <script>
+    async function fetchUsers() {
+      const res = await fetch('http://localhost:3000/api/users');
+      const users = await res.json();
+      const list = document.getElementById('userList');
+      list.innerHTML = '';
+      users.forEach(user => {
+        const li = document.createElement('li');
+        li.textContent = `${user.name}: ${user.workouts.join(', ')}`;
+        list.appendChild(li);
+      });
+    }
+
+    async function addUser() {
+      const name = document.getElementById('name').value;
+      const workouts = document.getElementById('workouts').value.split(',');
+
+      await fetch('http://localhost:3000/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, workouts })
+      });
+
+      fetchUsers();
+    }
+
+    fetchUsers();
+  </script>
+</body>
+</html>
